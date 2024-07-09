@@ -21,11 +21,6 @@ library(tidyverse)
 library(shinythemes)
 library(shinycssloaders)
 library(rsconnect)
-
-
-
-
-
 ```
 
 ```{r}
@@ -40,6 +35,7 @@ list.files("app_bsHeat")
 
 deployApp("app_bsHeat")
 ```
+
 
 ## Black Scholes model
 
@@ -151,7 +147,6 @@ ggplot(melted_call, aes(x = variable, y=Volatility, fill=value))+
        y="VOLATILITY", 
        fill= "Price Call")+
   theme_minimal()
-
 ```
 
 ```{r}
