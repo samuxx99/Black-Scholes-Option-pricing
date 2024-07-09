@@ -13,9 +13,8 @@ The **Black-Scholes model** is a mathematical model for **pricing** an **options
 ## Features
 
 - **Option Pricing Calculator**: Calculate the price of **European call** and **put options** using the **Black-Scholes formula**.
-- **Greeks Calculation**: Compute **option Greeks** such as **Delta**, **Gamma**, **Theta**, **Vega**, and **Rho**.
-- **Interactive Plots**: Visualize **option prices** and **Greeks** through **interactive plots**.
-- **Sensitivity Analysis**: Analyze how changes in **input parameters** affect **option prices** and **Greeks**.
+- **Interactive Plots**: Visualize **option prices** through **interactive plots**.
+- **Sensitivity Analysis**: Analyze how changes in **input parameters** affect **option prices**.
 - **User-Friendly Interface**: Intuitive and **easy-to-use interface** for **inputting parameters** and viewing **results**.
 
 ## Contact
