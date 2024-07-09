@@ -1,0 +1,167 @@
+---
+title: "Black Sholes project"
+author: "Samuele Aglieco"
+date: "2024-07-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(reshape2)
+library(shiny)
+library(bslib)
+library(modeldata)
+library(DataExplorer)
+library(plotly)
+library(tidyverse)
+library(shinythemes)
+library(shinycssloaders)
+library(rsconnect)
+
+
+
+
+
+```
+
+```{r}
+rsconnect::setAccountInfo(name='samueleaglieco',
+			  token='8E3D387163D55EAE4CACA1709761FF26',
+			  secret='h5j0oyKtdtRaYe2a2isRA2HIEfOrhaJM8dHFL9go')
+
+
+setwd("/home/samuele/Scrivania/Quant trading modeling R/Black Sholes modeling")
+
+list.files("app_bsHeat")
+
+deployApp("app_bsHeat")
+```
+
+## Black Scholes model
+
+For this analysis I decided to use the Black-Sholes model, which is for call
+
+$$
+V = S_0 \cdot N(d_1) - K \ \cdot \ e^{-rT}\ \cdot \ N(d_2)
+$$
+
+Instead for put
+
+$$
+V =  K \ \cdot \ e^{-rT}\ \cdot \ N(-d_2) - S_0 \cdot N(-d_1)
+$$
+
+in with $d_1$ is:
+
+$$
+d_1 = \frac {\ln{\frac{S_0}{K}}+ (r+\frac{\sigma^2}{2})T}{\sigma \sqrt T}
+$$
+
+and $d_2$
+
+$$
+d_2 = d_1 - \sigma \sqrt T
+$$
+
+```{r}
+bsPricing_call <- function(S0, K, r, t, sigma)
+{
+  d1 <- (log(S0/K) + (r + (sigma^2)/2) * t) / (sigma * sqrt(t))
+  d2 <- d1 - sigma * sqrt(t)
+  priceCall <- S0 * pnorm(d1) - K * exp(-r * t) * pnorm(d2)
+  return(priceCall)
+}
+
+bsPricing_put <- function(S0, K, r, t, sigma)
+{
+  d1 <- (log(S0/K) + (r + (sigma^2)/2) * t) / (sigma * sqrt(t))
+  d2 <- d1 - sigma * sqrt(t)
+  pricePut <-K * exp(-r * t) * pnorm(-d2) -  S0 * pnorm(-d1) 
+  return(pricePut)
+}
+```
+
+Fixing parameters
+
+```{r}
+K <- 100 
+t <- 1
+r <- 0.05
+
+```
+
+```{r}
+S0_values <- seq(76,114, by=4)
+sigma_values <- seq(0.09,0.27, by=0.02)
+
+callPrices <- matrix(nrow = length(sigma_values), ncol = length(S0_values))
+callPrices_df <- data.frame(callPrices)
+
+
+colnames(callPrices_df) <- S0_values
+callPrices_df$Volatility <- sigma_values
+
+melted_call <- melt(callPrices_df, id.vars = "Volatility" )
+melted_call$formattedValues <- sprintf("%.2f", melted$value)
+
+```
+
+```{r}
+putPrices <- matrix(nrow = length(sigma_values), ncol = length(S0_values))
+putPrices_df <- data.frame(putPrices)
+
+colnames(putPrices_df) <- S0_values
+putPrices_df$Volatility <- sigma_values
+
+melted_put <- melt(callPrices_df, id.vars = "Volatility" )
+melted_put$formattedValues <- sprintf("%.2f", melted_put$value)
+
+```
+
+## Calculate values
+
+```{r}
+for (i in 1:length(sigma_values)) {
+  for (j in 1:length(S0_values)) {
+   callPrices[i, j] <- bsPricing(S0_values[j], K, r, t, sigma_values[i]) 
+  }
+}
+
+for (i in 1:length(sigma_values)) {
+  for (j in 1:length(S0_values)) {
+   putPrices[i, j] <- bsPricing_put(S0_values[j], K, r, t, sigma_values[i]) 
+  }
+}
+
+```
+
+## Plotting heatmap
+
+```{r}
+ggplot(melted_call, aes(x = variable, y=Volatility, fill=value))+
+  geom_tile()+
+  geom_text(aes(label=formattedValues), color="white", size=3)+
+  scale_fill_gradient(low="blue", high = "yellow")+
+  labs(title = "CALL", 
+       x= "PRICE SPOT",
+       y="VOLATILITY", 
+       fill= "Price Call")+
+  theme_minimal()
+
+```
+
+```{r}
+ggplot(melted_put, aes(x = variable, y=Volatility, fill=value))+
+  geom_tile()+
+  geom_text(aes(label=formattedValues), color="white", size=3)+
+  scale_fill_gradient(low="blue", high = "yellow")+
+  labs(title = "PUT", 
+       x= "PRICE SPOT",
+       y="VOLATILITY", 
+       fill= "Price Put")+
+  theme_minimal()
+```
