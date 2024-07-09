@@ -17,3 +17,7 @@ The **Black-Scholes model** is a mathematical model for **pricing** an **options
 - **Interactive Plots**: Visualize **option prices** and **Greeks** through **interactive plots**.
 - **Sensitivity Analysis**: Analyze how changes in **input parameters** affect **option prices** and **Greeks**.
 - **User-Friendly Interface**: Intuitive and **easy-to-use interface** for **inputting parameters** and viewing **results**.
+
+Contact
+
+For any questions or suggestions, you can reach out to **Samuele Aglieco** via email or visit my GitHub profile.
